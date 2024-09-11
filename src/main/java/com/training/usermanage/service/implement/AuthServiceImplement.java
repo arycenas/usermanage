@@ -45,17 +45,24 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
+        var user = redisService.getUser(loginRequest.getUsername());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        }
+
+        // Manual password comparison (hashed password comparison)
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        }
+
+        // Authenticate the user via authenticationManager (optional after manual
+        // comparison)
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(), loginRequest.getPassword()));
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()));
         } catch (AuthenticationException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Invalid username or password");
-        }
-
-        var user = redisService.getUser(loginRequest.getUsername());
-        if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 

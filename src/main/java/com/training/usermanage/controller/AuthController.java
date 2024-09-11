@@ -1,5 +1,6 @@
 package com.training.usermanage.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,8 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Authentication Controller", description = "Operations to manage users authentication")
 public class AuthController {
 
-    private final AuthServiceImplement authService;
+    @Autowired
+    private AuthServiceImplement authService;
 
     @Operation(summary = "Register user and save to Redis")
     @PostMapping("/register")
@@ -36,7 +38,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = User.class)))
     })
     public ResponseEntity<User> register(@RequestBody RegisterRequest registerRequest) {
-        System.out.println("RegisterRequest: " + registerRequest);
         User registeredUser = authService.register(registerRequest);
 
         return new ResponseEntity<>(registeredUser, HttpStatus.OK);
