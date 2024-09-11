@@ -50,13 +50,10 @@ public class AuthServiceImplement implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        // Manual password comparison (hashed password comparison)
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        // Authenticate the user via authenticationManager (optional after manual
-        // comparison)
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
