@@ -52,12 +52,11 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder()); // Encode password
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return authenticationProvider;
     }
 
-    // Fungsi encode password
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
