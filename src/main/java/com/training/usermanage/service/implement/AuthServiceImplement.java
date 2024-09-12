@@ -66,6 +66,8 @@ public class AuthServiceImplement implements AuthService {
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
+        redisService.saveToken(user.getUsername(), token);
+
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setToken(token);
         jwtResponse.setRefreshToken(refreshToken);
