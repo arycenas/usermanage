@@ -54,7 +54,11 @@ public class AuthController {
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
 
+    @Operation(summary = "User login")
     @PostMapping("/login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User log in successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
+    })
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = authService.login(loginRequest);
 
