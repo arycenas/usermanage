@@ -29,9 +29,4 @@ public class RedisServiceImplement implements RedisService {
         userRedis.setToken(token);
         redisTemplate.opsForValue().set(userId, userRedis);
     }
-
-    @Override
-    public String getUserIdFromToken(String token) {
-        return (String) redisTemplate.opsForHash().get("TOKEN", token);
-    }
 }

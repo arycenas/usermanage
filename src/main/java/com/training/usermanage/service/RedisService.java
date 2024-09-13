@@ -9,6 +9,4 @@ public interface RedisService {
     UserRedis getUser(String userId);
 
     void saveToken(String token, String userId);
-
-    String getUserIdFromToken(String token);
 }
