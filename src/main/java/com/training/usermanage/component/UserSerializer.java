@@ -35,7 +35,7 @@ public class UserSerializer implements RedisSerializer<UserRedis> {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SerializationException("Error deserializing JSON to Student", e);
+            throw new SerializationException("Error deserializing JSON to User", e);
         }
     }
 }
