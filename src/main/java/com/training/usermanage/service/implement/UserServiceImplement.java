@@ -1,40 +1,47 @@
 package com.training.usermanage.service.implement;
 
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.training.usermanage.model.User;
+import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.service.UserService;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private HashOperations<String, String, User> hashOperations;
-
-    @PostConstruct
-    private void init() {
-        this.hashOperations = redisTemplate.opsForHash();
-    }
+    private final RedisTemplate<String, UserRedis> redisTemplate;
 
     @Override
     public void saveUser(User user) {
-        hashOperations.put("USER", user.getUsername(), user);
+        // Convert User to UserRedis
+        UserRedis userRedis = new UserRedis();
+        userRedis.setUsername(user.getUsername());
+        userRedis.setPassword(user.getPassword());
+        userRedis.setRole(user.getRole());
+
+        redisTemplate.opsForValue().set(user.getUsername(), userRedis);
     }
 
     @Override
     public User findUserByUsername(String username) {
-        User user = hashOperations.get("USER", username);
-        if (user == null) {
+        // Fetch UserRedis from Redis
+        UserRedis userRedis = redisTemplate.opsForValue().get(username);
+        if (userRedis == null) {
             throw new UsernameNotFoundException("User not found");
         }
+
+        // Convert UserRedis to User
+        User user = new User();
+        user.setUsername(userRedis.getUsername());
+        user.setPassword(userRedis.getPassword());
+        user.setRole(userRedis.getRole());
+
         return user;
     }
 

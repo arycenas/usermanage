@@ -1,12 +1,12 @@
 package com.training.usermanage.service;
 
-import com.training.usermanage.model.User;
+import com.training.usermanage.model.UserRedis;
 
 public interface RedisService {
 
-    void saveUser(String userId, User user);
+    void saveUser(String userId, UserRedis userRedis);
 
-    User getUser(String userId);
+    UserRedis getUser(String userId);
 
     void saveToken(String token, String userId);
 

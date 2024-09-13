@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.training.usermanage.model.User;
+import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.request.LoginRequest;
 import com.training.usermanage.request.RefreshTokenRequest;
 import com.training.usermanage.request.RegisterRequest;
@@ -37,8 +38,8 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = User.class)))
     })
-    public ResponseEntity<User> register(@RequestBody RegisterRequest registerRequest) {
-        User registeredUser = authService.register(registerRequest);
+    public ResponseEntity<UserRedis> register(@RequestBody RegisterRequest registerRequest) {
+        UserRedis registeredUser = authService.register(registerRequest);
 
         return new ResponseEntity<>(registeredUser, HttpStatus.OK);
     }
