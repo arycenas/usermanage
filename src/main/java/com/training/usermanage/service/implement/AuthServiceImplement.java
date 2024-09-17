@@ -78,14 +78,11 @@ public class AuthServiceImplement implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
-        // Generate tokens
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
-        // Save the token in Redis
         redisService.saveToken(token, user.getUsername());
 
-        // Return the JWT response
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setToken(token);
         jwtResponse.setRefreshToken(refreshToken);
