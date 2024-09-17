@@ -19,7 +19,6 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public void saveUser(User user) {
-        // Convert User to UserRedis
         UserRedis userRedis = new UserRedis();
         userRedis.setUsername(user.getUsername());
         userRedis.setPassword(user.getPassword());
