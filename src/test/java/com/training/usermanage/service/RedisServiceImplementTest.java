@@ -1,16 +1,14 @@
 package com.training.usermanage.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -26,9 +24,6 @@ class RedisServiceImplementTest {
 
     @Mock
     private ValueOperations<String, UserRedis> valueOperations;
-
-    @Mock
-    private HashOperations<String, String, String> hashOperations;
 
     @InjectMocks
     private RedisServiceImplement redisServiceImplement;

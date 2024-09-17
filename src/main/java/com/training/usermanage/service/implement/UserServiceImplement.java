@@ -30,13 +30,11 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public User findUserByUsername(String username) {
-        // Fetch UserRedis from Redis
         UserRedis userRedis = redisTemplate.opsForValue().get(username);
         if (userRedis == null) {
             throw new UsernameNotFoundException("User not found");
         }
 
-        // Convert UserRedis to User
         User user = new User();
         user.setUsername(userRedis.getUsername());
         user.setPassword(userRedis.getPassword());
