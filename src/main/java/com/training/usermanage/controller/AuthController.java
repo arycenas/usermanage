@@ -13,6 +13,7 @@ import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.request.LoginRequest;
 import com.training.usermanage.request.RefreshTokenRequest;
 import com.training.usermanage.request.RegisterRequest;
+import com.training.usermanage.request.TokenRequest;
 import com.training.usermanage.response.JwtResponse;
 import com.training.usermanage.service.implement.AuthServiceImplement;
 
@@ -64,5 +65,16 @@ public class AuthController {
         JwtResponse jwtResponse = authService.login(loginRequest);
 
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Validate token for Asteroid Service")
+    @PostMapping("/validate")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token is valid", content = @Content(schema = @Schema(implementation = Boolean.class)))
+    })
+    public ResponseEntity<Boolean> refresh(@RequestBody TokenRequest tokenRequest) {
+        boolean status = authService.validate(tokenRequest);
+
+        return new ResponseEntity<>(status, HttpStatus.OK);
     }
 }

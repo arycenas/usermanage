@@ -16,6 +16,7 @@ import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.request.LoginRequest;
 import com.training.usermanage.request.RefreshTokenRequest;
 import com.training.usermanage.request.RegisterRequest;
+import com.training.usermanage.request.TokenRequest;
 import com.training.usermanage.response.JwtResponse;
 import com.training.usermanage.service.AuthService;
 import com.training.usermanage.service.JwtService;
@@ -119,6 +120,31 @@ public class AuthServiceImplement implements AuthService {
             jwtResponse.setRefreshToken(refreshTokenRequest.getToken());
 
             return jwtResponse;
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+    }
+
+    @Override
+    public boolean validate(TokenRequest tokenRequest) {
+        // Extract the username from the refresh token
+        String username = jwtService.extractUsername(tokenRequest.getToken());
+
+        // Fetch the UserRedis object from Redis
+        UserRedis userRedis = redisService.getUser(username);
+        if (userRedis == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+        }
+
+        // Manually map fields from UserRedis to User for token validation
+        User user = new User();
+        user.setUsername(userRedis.getUsername());
+        user.setPassword(userRedis.getPassword());
+        user.setRole(userRedis.getRole());
+
+        // Validate the token
+        if (jwtService.isTokenValid(tokenRequest.getToken(), user)) {
+            return true;
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
