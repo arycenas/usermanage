@@ -44,9 +44,7 @@ This service is responsible for:
 
 - **Spring Boot**: Core framework for developing both services.
 - **Redis**: For storing user data in `User Management Service`.
-- **PostgreSQL**: For storing asteroid data in `Asteroid Data Service`.
 - **Docker**: Used to run Redis, PostgreSQL, and both services containers.
-- **NASA NeoWs API**: External API for fetching asteroid data.
 - **JWT**: Token-based authentication.
 
 ## Installation
