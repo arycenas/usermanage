@@ -58,25 +58,77 @@ This service is responsible for:
 
 ---
 
-## Installation
+## Requests and Responses Payload
 
-### Prerequisites
+### Requests
 
-- Docker installed on your system.
-- Java 17+ and Maven.
+#### Register Request
 
-### Running the Services
+```sh
+{
+  "username": "testing",
+  "password": "testing"
+}
+```
 
-1. Clone the repository.
-2. Navigate to the project folder.
-3. Build the services using Maven:
+#### Login Request
 
-   ```bash
-   mvn clean install
-   ```
+```sh
+{
+  "username": "testing",
+  "password": "testing"
+}
+```
 
-4. Run Docker containers for Redis, PostgreSQL, and services using Docker Compose:
+#### Validate Token Request
 
-```bash
- docker-compose up
+```sh
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI3MjMxODcyLCJleHAiOjE3MjczMTgyNzJ9.W7Qxu9bJ0DCWn95QYO5WGU0z3CnIz1EjuFbVVPdNB-A"
+}
+```
+
+#### Refresh Token Request
+
+```sh
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI2NzExMDExLCJleHAiOjE3MjY3OTc0MTF9.kTtuiQu-N9GeudQMXtDWeNz40ZQWr08PDRWDyPGNXLQ"
+}
+```
+
+### Responses
+
+#### Register Response
+
+```sh
+{
+    "username": "testing",
+    "password": "$2a$10$iM9gtIwfP.P7paowmviXuO4H3ke.WIumb7xTSjYVFmT8aT7fK03X6",
+    "token": null,
+    "role": "USER"
+}
+```
+
+#### Login Response
+
+```sh
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI3MjMxODcyLCJleHAiOjE3MjczMTgyNzJ9.W7Qxu9bJ0DCWn95QYO5WGU0z3CnIz1EjuFbVVPdNB-A",
+    "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI3MjMxODczLCJleHAiOjE3Mjc2NjM4NzN9.-MJNZfgAEcgUKYlUyq3ANDY0E0kRvMizKWCk-pcLYiE"
+}
+```
+
+#### Validate Response
+
+```sh
+true
+```
+
+#### Refresh Token Response
+
+```sh
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI3MjMyMDEzLCJleHAiOjE3MjczMTg0MTN9.VomRuvevvxmRL87u3DiqbKzQTG2ndx2J7HOAwThKOGE",
+    "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0aW5nIiwiaWF0IjoxNzI3MjMxODcyLCJleHAiOjE3MjczMTgyNzJ9.W7Qxu9bJ0DCWn95QYO5WGU0z3CnIz1EjuFbVVPdNB-A"
+}
 ```
