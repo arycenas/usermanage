@@ -73,5 +73,10 @@ This service is responsible for:
 
    ```bash
    mvn clean install
-   docker-compose up
    ```
+
+4. Run Docker containers for Redis, PostgreSQL, and services using Docker Compose:
+
+```bash
+ docker-compose up
+```
