@@ -13,10 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.training.usermanage.model.Role;
 import com.training.usermanage.model.User;
 import com.training.usermanage.model.UserRedis;
-import com.training.usermanage.request.LoginRequest;
-import com.training.usermanage.request.RefreshTokenRequest;
-import com.training.usermanage.request.RegisterRequest;
 import com.training.usermanage.request.TokenRequest;
+import com.training.usermanage.request.UserRequest;
 import com.training.usermanage.response.JwtResponse;
 import com.training.usermanage.service.AuthService;
 import com.training.usermanage.service.JwtService;
@@ -34,7 +32,7 @@ public class AuthServiceImplement implements AuthService {
     private final RedisService redisService;
 
     @Override
-    public UserRedis register(RegisterRequest registerRequest) {
+    public UserRedis register(UserRequest registerRequest) {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -51,7 +49,7 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public JwtResponse login(LoginRequest loginRequest) {
+    public JwtResponse login(UserRequest loginRequest) {
         // Fetch the UserRedis object from Redis
         UserRedis userRedis = redisService.getUser(loginRequest.getUsername());
         if (userRedis == null) {
@@ -92,7 +90,7 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public JwtResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public JwtResponse refreshToken(TokenRequest refreshTokenRequest) {
         // Extract the username from the refresh token
         String username = jwtService.extractUsername(refreshTokenRequest.getToken());
 

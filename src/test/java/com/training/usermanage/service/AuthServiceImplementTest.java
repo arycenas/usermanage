@@ -16,9 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.training.usermanage.model.Role;
 import com.training.usermanage.model.User;
 import com.training.usermanage.model.UserRedis;
-import com.training.usermanage.request.LoginRequest;
-import com.training.usermanage.request.RefreshTokenRequest;
-import com.training.usermanage.request.RegisterRequest;
+import com.training.usermanage.request.TokenRequest;
+import com.training.usermanage.request.UserRequest;
 import com.training.usermanage.response.JwtResponse;
 import com.training.usermanage.service.implement.AuthServiceImplement;
 
@@ -40,9 +39,9 @@ class AuthServiceImplementTest {
     @Mock
     private RedisService redisService;
 
-    private RegisterRequest registerRequest;
-    private LoginRequest loginRequest;
-    private RefreshTokenRequest refreshTokenRequest;
+    private UserRequest registerRequest;
+    private UserRequest loginRequest;
+    private TokenRequest refreshTokenRequest;
     private UserRedis userRedis;
     private User user;
 
@@ -58,15 +57,15 @@ class AuthServiceImplementTest {
         userRedis.setPassword(user.getPassword());
         userRedis.setRole(Role.USER);
 
-        registerRequest = new RegisterRequest();
+        registerRequest = new UserRequest();
         registerRequest.setUsername("testuser");
         registerRequest.setPassword("password");
 
-        loginRequest = new LoginRequest();
+        loginRequest = new UserRequest();
         loginRequest.setUsername("testuser");
         loginRequest.setPassword("password");
 
-        refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest = new TokenRequest();
     }
 
     @Test

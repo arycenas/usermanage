@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.training.usermanage.model.User;
 import com.training.usermanage.model.UserRedis;
-import com.training.usermanage.request.LoginRequest;
-import com.training.usermanage.request.RefreshTokenRequest;
-import com.training.usermanage.request.RegisterRequest;
 import com.training.usermanage.request.TokenRequest;
+import com.training.usermanage.request.UserRequest;
 import com.training.usermanage.response.JwtResponse;
 import com.training.usermanage.service.implement.AuthServiceImplement;
 
@@ -39,7 +37,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = User.class)))
     })
-    public ResponseEntity<UserRedis> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<UserRedis> register(@RequestBody UserRequest registerRequest) {
         UserRedis registeredUser = authService.register(registerRequest);
 
         return new ResponseEntity<>(registeredUser, HttpStatus.OK);
@@ -50,7 +48,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Token refreshed successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
     })
-    public ResponseEntity<JwtResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<JwtResponse> refresh(@RequestBody TokenRequest refreshTokenRequest) {
         JwtResponse jwtResponse = authService.refreshToken(refreshTokenRequest);
 
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
@@ -61,7 +59,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User log in successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
     })
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> login(@RequestBody UserRequest loginRequest) {
         JwtResponse jwtResponse = authService.login(loginRequest);
 
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
@@ -72,7 +70,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Token is valid", content = @Content(schema = @Schema(implementation = Boolean.class)))
     })
-    public ResponseEntity<Boolean> refresh(@RequestBody TokenRequest tokenRequest) {
+    public ResponseEntity<Boolean> validate(@RequestBody TokenRequest tokenRequest) {
         boolean status = authService.validate(tokenRequest);
 
         return new ResponseEntity<>(status, HttpStatus.OK);
