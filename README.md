@@ -8,10 +8,15 @@
   - [User Management Service](#user-management-service)
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
+  - [Endpoints](#endpoints)
+    - [Register a New User](#register-a-new-user)
+    - [User Login](#user-login)
+    - [Refresh JWT Token](#refresh-jwt-token)
+    - [Validate Token](#validate-token)
 
 ## Introduction
 
-This project is composed one of two microservices:
+This project is composed of two microservices:
 
 1. **User Management Service**: Handles user authentication and authorization using Redis for session management and JWT tokens.
 
@@ -35,10 +40,14 @@ This service is responsible for:
 
 #### Endpoints
 
-- `POST /auth/register` - Register a new user.
-- `POST /auth/login` - Login and receive JWT token.
-- `POST /auth/refreshToken` - Refresh JWT token if token expired.
-- `POST /auth/validate` - Verify the validity of a JWT token (used by the `Asteroid Data Service`).
+| Endpoint             | Description             | Method | Request Body        | Response Body        |
+| -------------------- | ----------------------- | ------ | ------------------- | -------------------- |
+| `/auth/register`     | Register a new user     | POST   | RegisterRequest     | UserRedis            |
+| `/auth/login`        | Login and get JWT token | POST   | LoginRequest        | JwtResponse          |
+| `/auth/refreshToken` | Refresh JWT token       | POST   | RefreshTokenRequest | JwtResponse          |
+| `/auth/validate`     | Validate JWT token      | POST   | TokenRequest        | Boolean (true/false) |
+
+---
 
 ## Technologies Used
 
@@ -47,9 +56,22 @@ This service is responsible for:
 - **Docker**: Used to run Redis, PostgreSQL, and both services containers.
 - **JWT**: Token-based authentication.
 
+---
+
 ## Installation
 
 ### Prerequisites
 
 - Docker installed on your system.
 - Java 17+ and Maven.
+
+### Running the Services
+
+1. Clone the repository.
+2. Navigate to the project folder.
+3. Build the services using Maven:
+
+   ```bash
+   mvn clean install
+   docker-compose up
+   ```
