@@ -7,7 +7,6 @@
 - [Services](#services)
   - [User Management Service](#user-management-service)
 - [Technologies Used](#technologies-used)
-- [Installation](#installation)
   - [Endpoints](#endpoints)
     - [Register a New User](#register-a-new-user)
     - [User Login](#user-login)
@@ -38,7 +37,16 @@ This service is responsible for:
 - Storing user sessions in Redis.
 - Verifying token validity when accessing other services.
 
-#### Endpoints
+## Technologies Used
+
+- **Spring Boot**: Core framework for developing both services.
+- **Redis**: For storing user data in `User Management Service`.
+- **Docker**: Used to run Redis, PostgreSQL, and both services containers.
+- **JWT**: Token-based authentication.
+
+---
+
+## Endpoints
 
 | Endpoint             | Description             | Method | Request Body        | Response Body        |
 | -------------------- | ----------------------- | ------ | ------------------- | -------------------- |
@@ -46,15 +54,6 @@ This service is responsible for:
 | `/auth/login`        | Login and get JWT token | POST   | LoginRequest        | JwtResponse          |
 | `/auth/refreshToken` | Refresh JWT token       | POST   | RefreshTokenRequest | JwtResponse          |
 | `/auth/validate`     | Validate JWT token      | POST   | TokenRequest        | Boolean (true/false) |
-
----
-
-## Technologies Used
-
-- **Spring Boot**: Core framework for developing both services.
-- **Redis**: For storing user data in `User Management Service`.
-- **Docker**: Used to run Redis, PostgreSQL, and both services containers.
-- **JWT**: Token-based authentication.
 
 ---
 
