@@ -10,12 +10,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.training.usermanage.model.UserRedis;
 
 import io.jsonwebtoken.io.SerializationException;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class UserSerializer implements RedisSerializer<UserRedis> {
+
     private final ObjectMapper objectMapper;
+
+    public UserSerializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public byte[] serialize(UserRedis userRedis) throws SerializationException {

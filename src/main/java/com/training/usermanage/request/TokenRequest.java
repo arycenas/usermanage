@@ -1,9 +1,14 @@
 package com.training.usermanage.request;
 
-import lombok.Data;
-
-@Data
 public class TokenRequest {
 
     private String token;
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

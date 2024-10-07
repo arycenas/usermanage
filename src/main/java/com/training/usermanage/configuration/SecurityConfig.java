@@ -19,15 +19,17 @@ import com.training.usermanage.component.JwtUtils;
 import com.training.usermanage.model.Role;
 import com.training.usermanage.service.UserService;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
     private final UserService userService;
+
+    public SecurityConfig(JwtUtils jwtUtils, UserService userService) {
+        this.jwtUtils = jwtUtils;
+        this.userService = userService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

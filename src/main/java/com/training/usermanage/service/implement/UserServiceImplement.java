@@ -9,13 +9,14 @@ import com.training.usermanage.model.User;
 import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.service.UserService;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
 
     private final RedisTemplate<String, UserRedis> redisTemplate;
+
+    public UserServiceImplement(RedisTemplate<String, UserRedis> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public void saveUser(User user) {

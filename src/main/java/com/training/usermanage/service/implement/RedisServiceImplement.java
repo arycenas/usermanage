@@ -1,6 +1,5 @@
 package com.training.usermanage.service.implement;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +9,11 @@ import com.training.usermanage.service.RedisService;
 @Service
 public class RedisServiceImplement implements RedisService {
 
-    @Autowired
-    private RedisTemplate<String, UserRedis> redisTemplate;
+    private final RedisTemplate<String, UserRedis> redisTemplate;
+
+    public RedisServiceImplement(RedisTemplate<String, UserRedis> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public void saveUser(String userId, UserRedis userRedis) {

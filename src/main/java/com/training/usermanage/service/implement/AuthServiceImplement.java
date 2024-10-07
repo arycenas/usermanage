@@ -20,16 +20,21 @@ import com.training.usermanage.service.AuthService;
 import com.training.usermanage.service.JwtService;
 import com.training.usermanage.service.RedisService;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImplement implements AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RedisService redisService;
+
+    public AuthServiceImplement(AuthenticationManager authenticationManager, JwtService jwtService,
+            PasswordEncoder passwordEncoder, RedisService redisService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.redisService = redisService;
+    }
 
     @Override
     public UserRedis register(UserRequest registerRequest) {
