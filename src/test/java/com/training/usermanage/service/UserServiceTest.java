@@ -1,15 +1,16 @@
 package com.training.usermanage.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -18,10 +19,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.training.usermanage.model.Role;
 import com.training.usermanage.model.User;
 import com.training.usermanage.model.UserRedis;
-import com.training.usermanage.service.implement.UserServiceImplement;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplementTest {
+class UserServiceTest {
 
     @Mock
     private RedisTemplate<String, UserRedis> redisTemplate;
@@ -30,7 +30,7 @@ class UserServiceImplementTest {
     private ValueOperations<String, UserRedis> valueOperations;
 
     @InjectMocks
-    private UserServiceImplement userServiceImplement;
+    private UserService userService;
 
     private User user;
     private UserRedis userRedis;
@@ -52,16 +52,23 @@ class UserServiceImplementTest {
 
     @Test
     void shouldSaveUserToRedis() {
-        userServiceImplement.saveUser(user);
+        ArgumentCaptor<UserRedis> captor = ArgumentCaptor.forClass(UserRedis.class);
 
-        verify(valueOperations).set("testuser", userRedis);
+        userService.saveUser(user);
+
+        verify(valueOperations).set(eq("testuser"), captor.capture());
+
+        UserRedis capturedUserRedis = captor.getValue();
+        assertThat(capturedUserRedis.getUsername()).isEqualTo(userRedis.getUsername());
+        assertThat(capturedUserRedis.getPassword()).isEqualTo(userRedis.getPassword());
+        assertThat(capturedUserRedis.getRole()).isEqualTo(userRedis.getRole());
     }
 
     @Test
     void shouldReturnUserWhenFoundInRedis() {
         given(valueOperations.get("testuser")).willReturn(userRedis);
 
-        User foundUser = userServiceImplement.findUserByUsername("testuser");
+        User foundUser = userService.findUserByUsername("testuser");
 
         assertThat(foundUser.getUsername()).isEqualTo("testuser");
         assertThat(foundUser.getPassword()).isEqualTo("password");
@@ -72,6 +79,6 @@ class UserServiceImplementTest {
     void shouldThrowExceptionWhenUserNotFoundInRedis() {
         given(valueOperations.get("unknownuser")).willReturn(null);
 
-        assertThrows(UsernameNotFoundException.class, () -> userServiceImplement.findUserByUsername("unknownuser"));
+        assertThrows(UsernameNotFoundException.class, () -> userService.findUserByUsername("unknownuser"));
     }
 }

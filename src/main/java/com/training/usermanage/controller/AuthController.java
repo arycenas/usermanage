@@ -12,7 +12,7 @@ import com.training.usermanage.model.UserRedis;
 import com.training.usermanage.request.TokenRequest;
 import com.training.usermanage.request.UserRequest;
 import com.training.usermanage.response.JwtResponse;
-import com.training.usermanage.service.implement.AuthServiceImplement;
+import com.training.usermanage.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,9 +26,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Authentication Controller", description = "Operations to manage users authentication")
 public class AuthController {
 
-    private final AuthServiceImplement authService;
+    private final AuthService authService;
 
-    public AuthController(AuthServiceImplement authService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
     }
 

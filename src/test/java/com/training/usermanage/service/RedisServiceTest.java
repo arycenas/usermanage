@@ -14,10 +14,9 @@ import org.springframework.data.redis.core.ValueOperations;
 
 import com.training.usermanage.model.Role;
 import com.training.usermanage.model.UserRedis;
-import com.training.usermanage.service.implement.RedisServiceImplement;
 
 @ExtendWith(MockitoExtension.class)
-class RedisServiceImplementTest {
+class RedisServiceTest {
 
     @Mock
     private RedisTemplate<String, UserRedis> redisTemplate;
@@ -26,7 +25,7 @@ class RedisServiceImplementTest {
     private ValueOperations<String, UserRedis> valueOperations;
 
     @InjectMocks
-    private RedisServiceImplement redisServiceImplement;
+    private RedisService redisServiceImplement;
 
     private UserRedis userRedis;
 

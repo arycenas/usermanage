@@ -1,36 +1,34 @@
 package com.training.usermanage.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.training.usermanage.model.Role;
-import com.training.usermanage.service.implement.JwtServiceImplement;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @ExtendWith(MockitoExtension.class)
-class JwtServiceImplementTest {
+class JwtServiceTest {
 
     @Mock
     private UserDetails userDetails;
 
     @InjectMocks
-    private JwtServiceImplement jwtServiceImplement;
+    private JwtService jwtServiceImplement;
 
     private Key signingKey;
     private String testToken;
