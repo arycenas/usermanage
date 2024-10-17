@@ -2,6 +2,8 @@ package com.training.usermanage.service;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import com.training.usermanage.response.JwtResponse;
 @Service
 public class AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -34,6 +37,14 @@ public class AuthService {
     }
 
     public UserRedis register(UserRequest registerRequest) {
+        log.info("Registering user: {}", registerRequest.getUsername());
+
+        UserRedis existingUser = redisService.getUser(registerRequest.getUsername());
+        if (existingUser != null) {
+            log.error("Username {} already exists", registerRequest.getUsername());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+        }
+
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -45,42 +56,47 @@ public class AuthService {
         userRedis.setRole(user.getRole());
 
         redisService.saveUser(user.getUsername(), userRedis);
+        log.info("User {} registered successfully", user.getUsername());
 
         return userRedis;
     }
 
     public JwtResponse login(UserRequest loginRequest) {
-        // Fetch the UserRedis object from Redis
+        log.info("Logging in user: {}", loginRequest.getUsername());
+
         UserRedis userRedis = redisService.getUser(loginRequest.getUsername());
         if (userRedis == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            log.error("Username not found: {}", loginRequest.getUsername());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found");
         }
 
-        // Manually map fields from UserRedis to User for authentication
         User user = new User();
         user.setUsername(userRedis.getUsername());
         user.setPassword(userRedis.getPassword());
         user.setRole(userRedis.getRole());
 
-        // Verify password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            log.error("Invalid password for user: {}", loginRequest.getUsername());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid password");
         }
 
-        // Authenticate the user
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
+
+            log.info("Authentication successful for user: {}", loginRequest.getUsername());
         } catch (AuthenticationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            log.error("Authentication failed for user: {}", loginRequest.getUsername());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");
         }
 
         var token = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
         redisService.saveToken(token, user.getUsername());
+        log.info("Token generated and saved for user: {}", loginRequest.getUsername());
 
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setToken(token);
@@ -90,28 +106,25 @@ public class AuthService {
     }
 
     public JwtResponse refreshToken(TokenRequest refreshTokenRequest) {
-        // Extract the username from the refresh token
+        log.info("Refreshing token for request...");
+
         String username = jwtService.extractUsername(refreshTokenRequest.getToken());
 
-        // Fetch the UserRedis object from Redis
         UserRedis userRedis = redisService.getUser(username);
         if (userRedis == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+            log.error("Username not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        // Manually map fields from UserRedis to User for token validation
         User user = new User();
         user.setUsername(userRedis.getUsername());
         user.setPassword(userRedis.getPassword());
         user.setRole(userRedis.getRole());
 
-        // Validate the token
         if (jwtService.isTokenValid(refreshTokenRequest.getToken(), user)) {
-            // Generate a new token
             var token = jwtService.generateToken(user);
+            log.info("New token generated for user: {}", username);
 
-            // Create and return the JwtResponse with the new token and existing refresh
-            // token
             JwtResponse jwtResponse = new JwtResponse();
             jwtResponse.setToken(token);
             jwtResponse.setRefreshToken(refreshTokenRequest.getToken());
@@ -119,30 +132,32 @@ public class AuthService {
             return jwtResponse;
         }
 
+        log.error("Invalid refresh token for user: {}", username);
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
     }
 
     public boolean validate(TokenRequest tokenRequest) {
-        // Extract the username from the refresh token
+        log.info("Validating token...");
+
         String username = jwtService.extractUsername(tokenRequest.getToken());
 
-        // Fetch the UserRedis object from Redis
         UserRedis userRedis = redisService.getUser(username);
         if (userRedis == null) {
+            log.error("Invalid token, user not found");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
         }
 
-        // Manually map fields from UserRedis to User for token validation
         User user = new User();
         user.setUsername(userRedis.getUsername());
         user.setPassword(userRedis.getPassword());
         user.setRole(userRedis.getRole());
 
-        // Validate the token
         if (jwtService.isTokenValid(tokenRequest.getToken(), user)) {
+            log.info("Token is valid for user: {}", username);
             return true;
         }
 
+        log.error("Token is invalid for user: {}", username);
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
     }
 }

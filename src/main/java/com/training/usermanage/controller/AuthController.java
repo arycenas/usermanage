@@ -1,5 +1,7 @@
 package com.training.usermanage.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Authentication Controller", description = "Operations to manage users authentication")
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -38,20 +41,11 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = User.class)))
     })
     public ResponseEntity<UserRedis> register(@RequestBody UserRequest registerRequest) {
+        log.info("Registering user with username: {}", registerRequest.getUsername());
         UserRedis registeredUser = authService.register(registerRequest);
+        log.info("User registered successfully with username: {}", registerRequest.getUsername());
 
         return new ResponseEntity<>(registeredUser, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Generate new token when token is expired")
-    @PostMapping("/refreshToken")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Token refreshed successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
-    })
-    public ResponseEntity<JwtResponse> refresh(@RequestBody TokenRequest refreshTokenRequest) {
-        JwtResponse jwtResponse = authService.refreshToken(refreshTokenRequest);
-
-        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
 
     @Operation(summary = "User login")
@@ -60,7 +54,22 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User log in successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
     })
     public ResponseEntity<JwtResponse> login(@RequestBody UserRequest loginRequest) {
+        log.info("Attempting to log in user with username: {}", loginRequest.getUsername());
         JwtResponse jwtResponse = authService.login(loginRequest);
+        log.info("User logged in successfully with username: {}", loginRequest.getUsername());
+
+        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Generate new token when token is expired")
+    @PostMapping("/refreshToken")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token refreshed successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
+    })
+    public ResponseEntity<JwtResponse> refresh(@RequestBody TokenRequest refreshTokenRequest) {
+        log.info("Refreshing token...");
+        JwtResponse jwtResponse = authService.refreshToken(refreshTokenRequest);
+        log.info("Token refreshed successfully for user");
 
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
@@ -71,7 +80,9 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Token is valid", content = @Content(schema = @Schema(implementation = Boolean.class)))
     })
     public ResponseEntity<Boolean> validate(@RequestBody TokenRequest tokenRequest) {
+        log.info("Validating token...");
         boolean status = authService.validate(tokenRequest);
+        log.info("Token validation status: {}", status);
 
         return new ResponseEntity<>(status, HttpStatus.OK);
     }

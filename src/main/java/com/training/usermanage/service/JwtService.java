@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,12 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    public String generateToken(UserDetails userDetails) {
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
+    public String generateToken(UserDetails userDetails) {
+        log.info("Generating token for user: {}", userDetails.getUsername());
+
+        log.info("Token generated successfully for user: {}", userDetails.getUsername());
         return Jwts.builder().setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
@@ -27,15 +33,10 @@ public class JwtService {
                 .compact();
     }
 
-    private Key getSigningKey() {
-        byte[] key = Decoders.BASE64
-                .decode("413F4428472B4B6250655368566D5970337336763979244226452948404D6351");
-
-        return Keys.hmacShaKeyFor(key);
-    }
-
     public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        log.info("Generating refresh token for user: {}", userDetails.getUsername());
 
+        log.info("Refresh token generated successfully for user: {}", userDetails.getUsername());
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 432000000))
@@ -44,23 +45,46 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-
-        return extractClaims(token, Claims::getSubject);
+        log.info("Extracting username from token");
+        String username = extractClaims(token, Claims::getSubject);
+        log.info("Username extracted: {}", username);
+        return username;
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        log.info("Validating token for user: {}", userDetails.getUsername());
 
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String username = extractUsername(token);
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+        if (isValid) {
+            log.info("Token is valid for user: {}", userDetails.getUsername());
+        } else {
+            log.error("Token is invalid or expired for user: {}", userDetails.getUsername());
+        }
+
+        return isValid;
+    }
+
+    private Key getSigningKey() {
+        log.debug("Getting signing key for token generation");
+
+        byte[] key = Decoders.BASE64
+                .decode("413F4428472B4B6250655368566D5970337336763979244226452948404D6351");
+
+        return Keys.hmacShaKeyFor(key);
     }
 
     private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
+        log.debug("Extracting claims from token");
+
         final Claims claims = extractAllClaims(token);
 
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
+        log.debug("Extracting all claims from token");
 
         return Jwts.parser().setSigningKey(getSigningKey())
                 .build().parseClaimsJws(token)
@@ -68,8 +92,17 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
+        log.info("Checking if token is expired");
 
-        return extractClaims(token, Claims::getExpiration)
+        boolean isExpired = extractClaims(token, Claims::getExpiration)
                 .before(new Date());
+
+        if (isExpired) {
+            log.error("Token is expired");
+        } else {
+            log.info("Token is not expired");
+        }
+
+        return isExpired;
     }
 }
