@@ -23,14 +23,10 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("Loading user by username: {}", username);
-
         return findUserByUsername(username);
     }
 
     public void saveUser(User user) {
-        log.info("Saving user: {}", user.getUsername());
-
         UserRedis userRedis = new UserRedis();
         userRedis.setUsername(user.getUsername());
         userRedis.setPassword(user.getPassword());
@@ -41,8 +37,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User findUserByUsername(String username) {
-        log.info("Fetching user by username: {}", username);
-
         UserRedis userRedis = redisTemplate.opsForValue().get(username);
         if (userRedis == null) {
             log.error("User not found in Redis: {}", username);

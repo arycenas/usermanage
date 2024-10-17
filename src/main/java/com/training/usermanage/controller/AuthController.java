@@ -41,7 +41,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = User.class)))
     })
     public ResponseEntity<UserRedis> register(@RequestBody UserRequest registerRequest) {
-        log.info("Registering user with username: {}", registerRequest.getUsername());
         UserRedis registeredUser = authService.register(registerRequest);
         log.info("User registered successfully with username: {}", registerRequest.getUsername());
 
@@ -54,7 +53,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "User log in successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
     })
     public ResponseEntity<JwtResponse> login(@RequestBody UserRequest loginRequest) {
-        log.info("Attempting to log in user with username: {}", loginRequest.getUsername());
         JwtResponse jwtResponse = authService.login(loginRequest);
         log.info("User logged in successfully with username: {}", loginRequest.getUsername());
 
@@ -67,7 +65,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Token refreshed successfully", content = @Content(schema = @Schema(implementation = JwtResponse.class)))
     })
     public ResponseEntity<JwtResponse> refresh(@RequestBody TokenRequest refreshTokenRequest) {
-        log.info("Refreshing token...");
         JwtResponse jwtResponse = authService.refreshToken(refreshTokenRequest);
         log.info("Token refreshed successfully for user");
 
@@ -80,7 +77,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Token is valid", content = @Content(schema = @Schema(implementation = Boolean.class)))
     })
     public ResponseEntity<Boolean> validate(@RequestBody TokenRequest tokenRequest) {
-        log.info("Validating token...");
         boolean status = authService.validate(tokenRequest);
         log.info("Token validation status: {}", status);
 

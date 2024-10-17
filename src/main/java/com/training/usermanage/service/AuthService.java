@@ -37,8 +37,6 @@ public class AuthService {
     }
 
     public UserRedis register(UserRequest registerRequest) {
-        log.info("Registering user: {}", registerRequest.getUsername());
-
         UserRedis existingUser = redisService.getUser(registerRequest.getUsername());
         if (existingUser != null) {
             log.error("Username {} already exists", registerRequest.getUsername());
@@ -62,8 +60,6 @@ public class AuthService {
     }
 
     public JwtResponse login(UserRequest loginRequest) {
-        log.info("Logging in user: {}", loginRequest.getUsername());
-
         UserRedis userRedis = redisService.getUser(loginRequest.getUsername());
         if (userRedis == null) {
             log.error("Username not found: {}", loginRequest.getUsername());
@@ -76,8 +72,8 @@ public class AuthService {
         user.setRole(userRedis.getRole());
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            log.error("Invalid password for user: {}", loginRequest.getUsername());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid password");
+            log.error("Invalid username or password for user: {}", loginRequest.getUsername());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");
         }
 
         try {
@@ -106,8 +102,6 @@ public class AuthService {
     }
 
     public JwtResponse refreshToken(TokenRequest refreshTokenRequest) {
-        log.info("Refreshing token for request...");
-
         String username = jwtService.extractUsername(refreshTokenRequest.getToken());
 
         UserRedis userRedis = redisService.getUser(username);
@@ -137,8 +131,6 @@ public class AuthService {
     }
 
     public boolean validate(TokenRequest tokenRequest) {
-        log.info("Validating token...");
-
         String username = jwtService.extractUsername(tokenRequest.getToken());
 
         UserRedis userRedis = redisService.getUser(username);

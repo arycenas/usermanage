@@ -18,14 +18,11 @@ public class RedisService {
     }
 
     public void saveUser(String userId, UserRedis userRedis) {
-        log.info("Saving user with ID: {}", userId);
         redisTemplate.opsForValue().set(userId, userRedis);
         log.info("User with ID: {} saved successfully", userId);
     }
 
     public UserRedis getUser(String userId) {
-        log.info("Retrieving user with ID: {}", userId);
-
         UserRedis userRedis = redisTemplate.opsForValue().get(userId);
         if (userRedis == null) {
             log.warn("User with ID: {} not found in Redis", userId);
@@ -37,8 +34,6 @@ public class RedisService {
     }
 
     public void saveToken(String token, String userId) {
-        log.info("Saving token for user with ID: {}", userId);
-
         UserRedis userRedis = redisTemplate.opsForValue().get(userId);
         if (userRedis == null) {
             log.warn("User with ID: {} not found, token not saved", userId);
