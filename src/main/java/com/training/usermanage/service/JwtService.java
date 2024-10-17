@@ -7,8 +7,10 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -55,12 +57,16 @@ public class JwtService {
         log.info("Validating token for user: {}", userDetails.getUsername());
 
         final String username = extractUsername(token);
-        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (isTokenExpired(token)) {
+            log.error("Token is expired for user {}", userDetails.getUsername());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token has expired");
+        }
 
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
         if (isValid) {
             log.info("Token is valid for user: {}", userDetails.getUsername());
         } else {
-            log.error("Token is invalid or expired for user: {}", userDetails.getUsername());
+            log.error("Token is invalid for user: {}", userDetails.getUsername());
         }
 
         return isValid;
