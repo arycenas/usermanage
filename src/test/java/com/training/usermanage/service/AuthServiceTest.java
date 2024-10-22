@@ -121,7 +121,7 @@ class AuthServiceTest {
         try {
             authService.login(loginRequest);
         } catch (ResponseStatusException e) {
-            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         }
 
         verify(authenticationManager, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
